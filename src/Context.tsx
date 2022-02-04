@@ -19,7 +19,6 @@ interface ContextProps {
     boards: Card
   ) => void;
   handleDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
-  uniqueId: () => void;
 }
 export const Context = React.createContext<ContextProps>({
   state: State,
@@ -30,7 +29,6 @@ export const Context = React.createContext<ContextProps>({
   setCurrentBoard: () => {},
   handleDragStart: () => {},
   handleDragEnd: () => {},
-  uniqueId: () => {},
 });
 export const ContextProvider = ({ children }: ContextProviderProps) => {
   const [state, setState] = useState<Card[]>(State);
@@ -44,15 +42,7 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
     },
     [currentBoard]
   );
-  const uniqueId = useCallback(() => {
-    const alphabet = "abcdefghijklmnopqrstuvwxyz";
-    let res;
-    for (let i = 0; i < 7; i++) {
-      const number = Math.floor(Math.random() * alphabet.length);
-      res = res + alphabet[number];
-    }
-    return res;
-  }, []);
+
   const handleDragEnd = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       let copyState = [...state];
@@ -69,7 +59,7 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
         setState(copyState);
       }
     },
-    [currentItem, state]
+    [currentBoard, currentItem, state]
   );
   return (
     <Context.Provider
@@ -82,7 +72,6 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
         setCurrentItem,
         handleDragEnd,
         handleDragStart,
-        uniqueId,
       }}
     >
       {children}
