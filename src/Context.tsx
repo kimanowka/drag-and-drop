@@ -9,31 +9,65 @@ interface ContextProps {
   setState: React.Dispatch<React.SetStateAction<Card[]>>;
   currentItem: CardItem;
   setCurrentItem: React.Dispatch<React.SetStateAction<CardItem>>;
-  handleDragStart: (e: React.DragEvent<HTMLDivElement>, item: CardItem) => void;
+  currentBoard: Card | null | undefined;
+  setCurrentBoard: React.Dispatch<
+    React.SetStateAction<Card | null | undefined>
+  >;
+  handleDragStart: (
+    e: React.DragEvent<HTMLDivElement>,
+    item: CardItem,
+    boards: Card
+  ) => void;
   handleDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
+  uniqueId: () => void;
 }
 export const Context = React.createContext<ContextProps>({
   state: State,
   setState: () => {},
   currentItem: {},
   setCurrentItem: () => {},
+  currentBoard: null,
+  setCurrentBoard: () => {},
   handleDragStart: () => {},
   handleDragEnd: () => {},
+  uniqueId: () => {},
 });
 export const ContextProvider = ({ children }: ContextProviderProps) => {
   const [state, setState] = useState<Card[]>(State);
   const [currentItem, setCurrentItem] = useState<CardItem>({});
+  const [currentBoard, setCurrentBoard] = useState<Card | null | undefined>();
+
   const handleDragStart = useCallback(
-    (e: React.DragEvent<HTMLDivElement>, item: CardItem) => {
+    (e: React.DragEvent<HTMLDivElement>, item: CardItem, boards: Card) => {
       setCurrentItem(item);
+      setCurrentBoard(boards);
     },
-    []
+    [currentBoard]
   );
+  const uniqueId = useCallback(() => {
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+    let res;
+    for (let i = 0; i < 7; i++) {
+      const number = Math.floor(Math.random() * alphabet.length);
+      res = res + alphabet[number];
+    }
+    return res;
+  }, []);
   const handleDragEnd = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       let copyState = [...state];
-      copyState[1].items.push(currentItem);
-      setState(copyState);
+      if (currentBoard!.header === "Правый столбец") {
+        let currentIndex = currentBoard!.items.indexOf(currentItem);
+        copyState[0].items.splice(currentIndex, 1);
+        copyState[1].items.push(currentItem);
+        setState(copyState);
+      }
+      if (currentBoard!.header === "Левый столбец") {
+        let currentIndex = currentBoard!.items.indexOf(currentItem);
+        copyState[1].items.splice(currentIndex, 1);
+        copyState[0].items.push(currentItem);
+        setState(copyState);
+      }
     },
     [currentItem, state]
   );
@@ -43,9 +77,12 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
         state,
         setState,
         currentItem,
+        currentBoard,
+        setCurrentBoard,
         setCurrentItem,
         handleDragEnd,
         handleDragStart,
+        uniqueId,
       }}
     >
       {children}

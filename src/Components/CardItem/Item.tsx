@@ -14,7 +14,7 @@ export default function Item({ item, boards }: ItemProps): JSX.Element {
       className={item.name}
       draggable={true}
       onDragStart={(e: React.DragEvent<HTMLDivElement>) =>
-        handleDragStart(e, item)
+        handleDragStart(e, item, boards)
       }
       onDragEnd={(e: React.DragEvent<HTMLDivElement>) => handleDragEnd(e)}
     ></div>

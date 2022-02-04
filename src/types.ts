@@ -1,6 +1,6 @@
 export interface Card {
   id: number;
-  header: string;
+  header: "Правый столбец" | "Левый столбец";
   items: CardItem[];
 }
 
