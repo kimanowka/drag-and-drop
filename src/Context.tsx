@@ -47,15 +47,17 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
     (e: React.DragEvent<HTMLDivElement>) => {
       let copyState = [...state];
       if (currentBoard!.header === "Правый столбец") {
-        let currentIndex = currentBoard!.items.indexOf(currentItem);
-        copyState[0].items.splice(currentIndex, 1);
-        copyState[1].items.push(currentItem);
+        let currentIndexitem = currentBoard!.items.indexOf(currentItem);
+        let currentIndexBoard = state.indexOf(currentBoard!);
+        copyState[currentIndexBoard].items.splice(currentIndexitem, 1);
+        copyState[currentIndexBoard + 1].items.push(currentItem);
         setState(copyState);
       }
       if (currentBoard!.header === "Левый столбец") {
         let currentIndex = currentBoard!.items.indexOf(currentItem);
-        copyState[1].items.splice(currentIndex, 1);
-        copyState[0].items.push(currentItem);
+        let currentIndexBoard = state.indexOf(currentBoard!);
+        copyState[currentIndexBoard].items.splice(currentIndex, 1);
+        copyState[currentIndexBoard - 1].items.push(currentItem);
         setState(copyState);
       }
     },
